@@ -36,10 +36,6 @@ namespace WpfSampLauncher.Viwes.Pages
     /// </summary>
     public partial class MainPage : Page
     {
-        
-        [DllImport("gdi32.dll", EntryPoint = "RemoveFontResourceW", SetLastError = true)]
-        public static extern int RemoveFontResource([In][MarshalAs(UnmanagedType.LPWStr)]
-                                            string lpFileName);
 
         public static string link = "http://f0927201.xsph.ru/";
         public static string Sborka_Zip = "/Zip.zip";
@@ -183,33 +179,6 @@ namespace WpfSampLauncher.Viwes.Pages
         private void dwn()
         {
             string fileName = "Zip.zip";
-
-
-
-            if (File.Exists("data/sampaux3.ttf"))
-            {
-                RemoveFontResource("data/sampaux3.ttf");
-                int error = Marshal.GetLastWin32Error();
-
-                if (error != 0)
-                {
-                    //MessageBox.Show($"1/{new Win32Exception(error).Message}");
-                    RemoveFontResource("data/sampaux3.ttf");
-                }
-            }
-
-            if (File.Exists("data/gtaweap3.ttf"))
-            {
-                RemoveFontResource("data/gtaweap3.ttf");
-                int error = Marshal.GetLastWin32Error();
-
-                if (error != 0)
-                {
-                    //MessageBox.Show($"2/{new Win32Exception(error).Message}");
-                    RemoveFontResource("data/gtaweap3.ttf");
-                }
-            }
-
 
             try
             {

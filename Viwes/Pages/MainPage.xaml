@@ -18,7 +18,7 @@
             </Grid.ColumnDefinitions>
 
             <Label x:Name="l1" Content="" VerticalAlignment="Bottom" Margin="0, 0, 0, 10"/>
-            <Grid>
+            <Grid Height="30" VerticalAlignment="Top">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"/>
                     <RowDefinition />
@@ -46,6 +46,28 @@
                     </Style>
                     <Style TargetType="Button">
                         <Setter Property="Background" Value="#C18402"/>
+
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border Background="{TemplateBinding Background}" BorderBrush="#0000" BorderThickness="0">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#9B6A00"/>
+                                <Setter Property="Foreground" Value="#FFFBAA47"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#FF463400"/>
+                                <Setter Property="Foreground" Value="#FFFBAA47"/>
+                            </Trigger>
+                        </Style.Triggers>
+
                     </Style>
                 </Button.Resources>
             </Button>
