@@ -54,7 +54,15 @@ namespace WpfSampLauncher.Viwes.Pages
         private void Btn_Play_Click(object sender, RoutedEventArgs e)
         {
             Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.IsEnabled = false));
+            Btn_2.Dispatcher.BeginInvoke(new Action(() => Btn_2.IsEnabled = false));
             checkversion();
+        }
+
+        private void Btn_2_Click(object sender, RoutedEventArgs e)
+        {
+            Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.IsEnabled = false));
+            Btn_2.Dispatcher.BeginInvoke(new Action(() => Btn_2.IsEnabled = false));
+            dwn();
         }
 
 
@@ -154,6 +162,7 @@ namespace WpfSampLauncher.Viwes.Pages
                         {
                             MessageBox.Show(e.Message);
                             Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.IsEnabled = true));
+                            Btn_2.Dispatcher.BeginInvoke(new Action(() => Btn_2.IsEnabled = true));
                         }
                     }
                     else
@@ -241,6 +250,7 @@ namespace WpfSampLauncher.Viwes.Pages
                         l1.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Готово"));
                         Btn_Play.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Готово"));
                         Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.IsEnabled = true));
+                        Btn_2.Dispatcher.BeginInvoke(new Action(() => Btn_2.IsEnabled = true));
                         Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.Content = "Play"));
                     }
                     catch
@@ -249,11 +259,7 @@ namespace WpfSampLauncher.Viwes.Pages
                     }
                 });
             }
-
-
-
-
-        }
+    }
 
 
 
