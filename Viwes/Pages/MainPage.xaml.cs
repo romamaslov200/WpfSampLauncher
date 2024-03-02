@@ -193,7 +193,7 @@ namespace WpfSampLauncher.Viwes.Pages
 
                 if (error != 0)
                 {
-                    MessageBox.Show($"1/{new Win32Exception(error).Message}");
+                    //MessageBox.Show($"1/{new Win32Exception(error).Message}");
                     RemoveFontResource("data/sampaux3.ttf");
                 }
             }
@@ -205,11 +205,9 @@ namespace WpfSampLauncher.Viwes.Pages
 
                 if (error != 0)
                 {
-                    MessageBox.Show($"2/{new Win32Exception(error).Message}");
+                    //MessageBox.Show($"2/{new Win32Exception(error).Message}");
                     RemoveFontResource("data/gtaweap3.ttf");
                 }
-
-                Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.Content = "Обновление клиента..."));
             }
 
 
