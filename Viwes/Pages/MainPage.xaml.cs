@@ -25,6 +25,8 @@ using WpfSampLauncher.Models;
 using Newtonsoft.Json;
 using System.Drawing;
 using System.Security.Policy;
+using System.Runtime.InteropServices;
+
 
 namespace WpfSampLauncher.Viwes.Pages
 {
@@ -33,6 +35,12 @@ namespace WpfSampLauncher.Viwes.Pages
     /// </summary>
     public partial class MainPage : Page
     {
+        
+        [DllImport("gdi32.dll", EntryPoint = "RemoveFontResourceW", SetLastError = true)]
+        public static extern int RemoveFontResource([In][MarshalAs(UnmanagedType.LPWStr)]
+                                            string lpFileName);
+
+
         public MainPage()
         {
             InitializeComponent();
@@ -40,13 +48,13 @@ namespace WpfSampLauncher.Viwes.Pages
             {
                 var obj = JsonConvert.DeserializeObject<JsonSave>(File.ReadAllText("jsoninfo.json"));
                 gunaTextBox1.Text = obj.NickGame;
-
             }
             catch (Exception ex) { }
         }
 
         private void Btn_Play_Click(object sender, RoutedEventArgs e)
         {
+            Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.IsEnabled = false));
             checkversion();
         }
 
@@ -132,7 +140,6 @@ namespace WpfSampLauncher.Viwes.Pages
                     {
                         try
                         {
-                            Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.IsEnabled = true));
                             l1.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Клиент обновлен"));
                             gunaProgressBar1.Dispatcher.Invoke(new Action(() => gunaProgressBar1.Value = 120));
 
@@ -179,6 +186,18 @@ namespace WpfSampLauncher.Viwes.Pages
         {
             string fileName = "Zip.zip";
             string linkx = "http://f0927201.xsph.ru/Zip.zip";
+
+            if (File.Exists("data/sampaux3.ttf"))
+            {
+                RemoveFontResource("data/sampaux3.ttf");
+            }
+            
+            if (File.Exists("data/Deleted/GTAWEAP3.TTF"))
+            {
+                RemoveFontResource("data/Deleted/GTAWEAP3.TTF");
+                Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.Content = "Обновление клиента..."));
+            }
+
             try
             {
                 Directory.Delete("data/", true);
@@ -221,7 +240,6 @@ namespace WpfSampLauncher.Viwes.Pages
 
                     var task = Task.Run((Func<Task>)WaitExt);
                     task.Wait();
-                    Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.IsEnabled = true));
                     gunaProgressBar1.Dispatcher.Invoke(new Action(() => gunaProgressBar1.Value = gunaProgressBar1.Maximum));
 
                 });
@@ -239,6 +257,7 @@ namespace WpfSampLauncher.Viwes.Pages
                         ZipFile.ExtractToDirectory("Zip.zip", "data/");
                         l1.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Готово"));
                         Btn_Play.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Готово"));
+                        Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.IsEnabled = true));
                         Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.Content = "Play"));
                     }
                     catch
