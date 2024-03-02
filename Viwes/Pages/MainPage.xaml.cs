@@ -26,6 +26,7 @@ using Newtonsoft.Json;
 using System.Drawing;
 using System.Security.Policy;
 using System.Runtime.InteropServices;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace WpfSampLauncher.Viwes.Pages
@@ -40,6 +41,8 @@ namespace WpfSampLauncher.Viwes.Pages
         public static extern int RemoveFontResource([In][MarshalAs(UnmanagedType.LPWStr)]
                                             string lpFileName);
 
+        public static string link = "http://f0927201.xsph.ru/";
+        public static string Sborka_Zip = "/Zip.zip";
 
         public MainPage()
         {
@@ -104,16 +107,9 @@ namespace WpfSampLauncher.Viwes.Pages
 
             static async Task Getlinks()
             {
-                string oauthToken = "http://f0927201.xsph.ru/";
-                using (IDiskApi diskApi = new DiskHttpApi(oauthToken))
+                using (var client = new WebClient())
                 {
-                    //var rc = await diskApi.Files.GetDownloadLinkAsync(path: "readme.txt");
-                    //var uc = await diskApi.Files.GetDownloadLinkAsync(path: "Zip.zip");
-                    //File.WriteAllText("ucl.txt", uc.Href);
-                    using (var client = new WebClient())
-                    {
-                        client.DownloadFile($"{oauthToken}readme.txt", "readme.txt");
-                    }
+                    client.DownloadFile($"{link}readme.txt", "readme.txt");
                 }
             }
         }
@@ -156,10 +152,12 @@ namespace WpfSampLauncher.Viwes.Pages
                             saveKey.Close();
                             string vernoww = "46.174.50.42:7787";
                             Process.Start("data\\samp.exe", vernoww);
+                            Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.IsEnabled = true));
                         }
                         catch (Exception e)
                         {
                             MessageBox.Show(e.Message);
+                            Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.IsEnabled = true));
                         }
                     }
                     else
@@ -185,22 +183,40 @@ namespace WpfSampLauncher.Viwes.Pages
         private void dwn()
         {
             string fileName = "Zip.zip";
-            string linkx = "http://f0927201.xsph.ru/Zip.zip";
+
+
 
             if (File.Exists("data/sampaux3.ttf"))
             {
                 RemoveFontResource("data/sampaux3.ttf");
+                int error = Marshal.GetLastWin32Error();
+
+                if (error != 0)
+                {
+                    MessageBox.Show($"1/{new Win32Exception(error).Message}");
+                    RemoveFontResource("data/sampaux3.ttf");
+                }
             }
-            
-            if (File.Exists("data/Deleted/GTAWEAP3.TTF"))
+
+            if (File.Exists("data/gtaweap3.ttf"))
             {
-                RemoveFontResource("data/Deleted/GTAWEAP3.TTF");
+                RemoveFontResource("data/gtaweap3.ttf");
+                int error = Marshal.GetLastWin32Error();
+
+                if (error != 0)
+                {
+                    MessageBox.Show($"2/{new Win32Exception(error).Message}");
+                    RemoveFontResource("data/gtaweap3.ttf");
+                }
+
                 Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.Content = "Обновление клиента..."));
             }
+
 
             try
             {
                 Directory.Delete("data/", true);
+
                 File.Delete(fileName);
             }
             catch
@@ -212,10 +228,10 @@ namespace WpfSampLauncher.Viwes.Pages
             //client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
             client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
 
-            client.OpenRead(linkx);
+            client.OpenRead(link + Sborka_Zip);
             string size = client.ResponseHeaders["Content-Length"];
 
-            client.DownloadFileAsync(new Uri(linkx), "Zip.zip");
+            client.DownloadFileAsync(new Uri(link+Sborka_Zip), "Zip.zip");
 
             client.DownloadProgressChanged += (s, b) =>
             {
