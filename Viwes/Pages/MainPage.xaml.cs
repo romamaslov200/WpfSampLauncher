@@ -23,6 +23,8 @@ using System.Diagnostics;
 using System.Security.Principal;
 using WpfSampLauncher.Models;
 using Newtonsoft.Json;
+using System.Drawing;
+using System.Security.Policy;
 
 namespace WpfSampLauncher.Viwes.Pages
 {
@@ -118,8 +120,8 @@ namespace WpfSampLauncher.Viwes.Pages
                 string verser = File.ReadAllText(fileNameSer);
                 if (verser != vernow)
                 {
-                    l1.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Обновление клиента...!"));
-                    Btn_Play.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Обновление"));
+                    l1.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Обновление клиента..."));
+                    Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.Content = "Обновление"));
 
                     dwn();
                     File.WriteAllText(fileName, File.ReadAllText(fileNameSer));
@@ -131,7 +133,7 @@ namespace WpfSampLauncher.Viwes.Pages
                         try
                         {
                             Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.IsEnabled = true));
-                            l1.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Клиент обновлен!"));
+                            l1.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Клиент обновлен"));
                             gunaProgressBar1.Dispatcher.Invoke(new Action(() => gunaProgressBar1.Value = 120));
 
                             string nick = null;
@@ -155,7 +157,8 @@ namespace WpfSampLauncher.Viwes.Pages
                     }
                     else
                     {
-                        l1.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Обновление клиента...!"));
+                        Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.Content = "Обновление"));
+                        l1.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Обновление клиента..."));
                         dwn();
                         File.WriteAllText(fileName, File.ReadAllText(fileNameSer));
                     }
@@ -165,7 +168,7 @@ namespace WpfSampLauncher.Viwes.Pages
             {
                 File.WriteAllText("ver.txt", "000");
                 //l1.Content = "Обновление клиента...!";
-                l1.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Обновление клиента...!"));
+                l1.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Обновление клиента..."));
 
                 dwn();
                 File.WriteAllText(fileName, File.ReadAllText(fileNameSer));
@@ -179,35 +182,33 @@ namespace WpfSampLauncher.Viwes.Pages
             try
             {
                 Directory.Delete("data/", true);
+                File.Delete(fileName);
             }
             catch
             {
 
             }
-            if (File.Exists(fileName) != true)
-            {
-                WebClient client = new WebClient();
-                client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
-                client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
-                client.DownloadFileAsync(new Uri(linkx), "Zip.zip");
-            }
-            else
-            {
-                File.Delete(fileName);
-                WebClient client = new WebClient();
-                client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
-                client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
-                client.DownloadFileAsync(new Uri(linkx), "Zip.zip");
+            File.Delete(fileName);
+            WebClient client = new WebClient();
+            //client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
+            client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
 
+            client.OpenRead(linkx);
+            string size = client.ResponseHeaders["Content-Length"];
+
+            client.DownloadFileAsync(new Uri(linkx), "Zip.zip");
+
+            client.DownloadProgressChanged += (s, b) =>
+            {
+                l1.Dispatcher.BeginInvoke(new Action(() => l1.Content = $"{b.ProgressPercentage.ToString()}% ({((double)b.BytesReceived / 1048576).ToString("#.#")}MB/{Convert.ToUInt32(size) / 1048576}MB)"));
+                gunaProgressBar1.Dispatcher.Invoke(new Action(() => gunaProgressBar1.Value = b.ProgressPercentage));
+                };
             }
+
 
             void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
             {
                 ext();
-            }
-            void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-            {
-                gunaProgressBar1.Dispatcher.Invoke(new Action(() => gunaProgressBar1.Value = (int)e.ProgressPercentage));
             }
 
 
@@ -221,8 +222,6 @@ namespace WpfSampLauncher.Viwes.Pages
                     var task = Task.Run((Func<Task>)WaitExt);
                     task.Wait();
                     Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.IsEnabled = true));
-                    Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.Content = "Клиент обновлен!"));
-                    Btn_Play.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Play"));
                     gunaProgressBar1.Dispatcher.Invoke(new Action(() => gunaProgressBar1.Value = gunaProgressBar1.Maximum));
 
                 });
@@ -239,6 +238,8 @@ namespace WpfSampLauncher.Viwes.Pages
                         if (directoryinfo.Exists) directoryinfo.Delete(true);
                         ZipFile.ExtractToDirectory("Zip.zip", "data/");
                         l1.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Готово"));
+                        Btn_Play.Dispatcher.BeginInvoke(new Action(() => l1.Content = "Готово"));
+                        Btn_Play.Dispatcher.BeginInvoke(new Action(() => Btn_Play.Content = "Play"));
                     }
                     catch
                     {
@@ -256,4 +257,3 @@ namespace WpfSampLauncher.Viwes.Pages
 
 
     }
-}
